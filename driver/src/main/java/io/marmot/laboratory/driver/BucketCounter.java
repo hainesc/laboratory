@@ -1,0 +1,92 @@
+/**
+ * The MIT License (MIT)
+ * Copyright (c) 2015 Haines Chan
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to
+ * deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ */
+
+package io.marmot.laboratory.driver;
+
+import io.marmot.laboratory.utils.Record;
+import io.marmot.laboratory.utils.RecordReader;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
+// TODO: not so good, sorted map is better. but may be not suitable for merge sort.
+public class BucketCounter<T extends Record>
+    implements Callable<List<Map.Entry<T, Integer>>> {
+
+  private RecordReader reader;
+  private int top;
+  public BucketCounter(RecordReader reader, int top) {
+    this.reader = reader;
+    this.top = top;
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public List<Map.Entry<T, Integer>> call() {
+    Record record;
+    HashMap<T, Integer> countMap = new LinkedHashMap<>();
+    try {
+      while ((record = reader.next()) != null) {
+        if (countMap.containsKey(record)) {
+          countMap.put((T) record, countMap.get(record) + 1);
+        } else {
+          countMap.put((T) record, 1);
+        }
+      }
+      Iterator it = countMap.entrySet().iterator();
+      ArrayList<Map.Entry<T, Integer>> list = new ArrayList<>();
+      while (it.hasNext()) {
+        list.add((Map.Entry<T, Integer>) it.next());
+      }
+      Collections.sort(list, new Comparator<Map.Entry<T, Integer>>() {
+        @Override
+        public int compare(Map.Entry<T, Integer> o1,
+                           Map.Entry<T, Integer> o2) {
+          return o2.getValue().compareTo(o1.getValue());
+        }
+      });
+      // TODO: set result and create a function to get the result.
+      int max = Math.min(top, list.size());
+      return list.subList(0, max);
+      /*
+      System.out.println("TOP " + max + " in bucket this bucket is: ");
+      for (int i = 0; i < max; ++i) {
+        System.out.println(list.get(i).getKey().toString() + ": " + list.get(i).getValue());
+      }
+      */
+    } catch (IOException ioe) {
+      throw new RuntimeException("Error while reading bucket file...");
+    } finally {
+      try {
+        reader.close();
+      } catch (IOException ioe) {
+        // Do nothing.
+      }
+    }
+  }
+}
