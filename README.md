@@ -54,7 +54,7 @@ such as quick sort can not be run. I have some algorithm implemented below.
 Code Compile
 ------------
 * 0) make sure git, java, mvn is available for current user.
-* a) $ cd workspace && git clone [https://github.com/hainesc/laboratory].
+* a) $ cd workspace && git clone https://github.com/hainesc/laboratory.
 * b) $ cd laboratory && mvn package.
 
 
