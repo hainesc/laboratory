@@ -57,7 +57,7 @@ Code Compile
 Make sure git, java, mvn is available for current user.
 
 ```shell
-    cd workspace && git clone https://github.com/hainesc/laboratory.
-    cd laboratory && mvn package.
+    cd workspace && git clone https://github.com/hainesc/laboratory
+    cd laboratory && mvn package
 ```
 
