@@ -23,21 +23,21 @@ such as quick sort can not be run. I have some algorithm implemented below.
   they are ordered. Maintain a counter for each bucket indexed how many value
   in this bucket. 
   
-  1) Sampling and statistics the records, Computing the split value, make some
+  * 1) Sampling and statistics the records, Computing the split value, make some
     buckets.
-  2) Reading a record each time. Computing which bucket the record should be 
+  * 2) Reading a record each time. Computing which bucket the record should be 
     shuffled, put the value to corresponding queue. counter += 1. 
-  3) Each queue has its corresponding write thread which writes the value to 
+  * 3) Each queue has its corresponding write thread which writes the value to 
     disk.
-  4) Optimization can be introduced when you have more than k values in bigger
+  * 4) Optimization can be introduced when you have more than k values in bigger
     buckets, then the smaller ones can be thrown as trash.
-  5) After bucketing, Get the counters, c1, c2, ... , cm, 
+  * 5) After bucketing, Get the counters, c1, c2, ... , cm, 
     if (sum(c1, c2, ... , ci) = k), Then top K values are bucket{1..i}, The 
     Kth value is the min(record : bucket[i]), else if (sum(c1, c2, ... , ci) 
     < K) && (sum(c1, c2, ... , ci+1) > K), Then the top K values are 
     bucket{1..i} and some values in bucket[i + 1]. Run Half Quick sort for 
     bucket[i + 1] the find out the mth ele, m = f(K). O(n)
-  6) If data is too huge to one reader, just create more readers thread, No 
+  * 6) If data is too huge to one reader, just create more readers thread, No 
     interaction among readers. ...
     
 3. Most K, K always tiny compared to n and the distinct value set is small.
@@ -46,16 +46,15 @@ such as quick sort can not be run. I have some algorithm implemented below.
   Record format is: id, cookie, ... , country.
     
 4. Most K, K always tiny compared to n, the distinct value set in data is huge.
-  1) Hash bucket(efficient!).
-  2) Word count for every bucket by Hash map, get most k in every bucket.
-  3) Merge sort.
+  * 1) Hash bucket(efficient!).
+  * 2) Word count for every bucket by Hash map, get most k in every bucket.
+  * 3) Merge sort.
   Yeah, that is what MapReduce does.
-   
 
 Code Compile
 ------------
-0) make sure git, java, mvn is available for current user.
-a) $ cd workspace && git clone.
-b) $ cd laboratory && mvn package.
+* 0) make sure git, java, mvn is available for current user.
+* a) $ cd workspace && git clone [https://github.com/hainesc/laboratory].
+* b) $ cd laboratory && mvn package.
 
 
