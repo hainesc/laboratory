@@ -1,10 +1,14 @@
 package io.marmot.laboratory.algorithm;
 
 import com.google.common.collect.MinMaxPriorityQueue;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -13,6 +17,7 @@ import java.util.Random;
  */
 
 public class MaxMinHeapTest {
+  // Top 12.
   MinMaxPriorityQueue<Integer> heap;
   @Before
   public void setUp() {
@@ -21,49 +26,37 @@ public class MaxMinHeapTest {
       public int compare(Integer i1, Integer i2) {
         return i1.compareTo(i2);
       }
-    }).maximumSize(12 + 1).create();
-    /*
-    heap.add(4);
-    heap.add(8);
-    heap.add(2);
-    heap.add(13);
-    heap.add(82);
-    heap.add(12);
-    heap.add(45);
-    heap.add(63);
-    heap.add(33);
-    heap.add(46);
-    heap.add(46);
-    */
-    Random r = new Random();
-    for (int i = 0; i < 12; ++i) {
-      int x = Math.abs(r.nextInt());
-      System.out.println("Data coming: " + x);
-      heap.add(x);
-    }
+    }).maximumSize(12).create();
 
-    for (int i = 0; i < 512; ++i) {
-      int x = Math.abs(r.nextInt());
-      System.out.println("Data coming: " + x);
-      int y = heap.peekFirst();
-      if (x > y) {
-        heap.add(x);
-        System.out.println("Data popping: " + heap.removeFirst());
-      }
-
-    }
-    boolean b = r.nextBoolean();
-    System.out.println(b);
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void test() {
-    /*
-    Assert.assertEquals(heap.removeFirst(), (Integer) 82);
-    Assert.assertEquals(heap.removeFirst(), (Integer) 63);
-    Assert.assertEquals(heap.removeFirst(), (Integer) 46);
-    Assert.assertEquals(heap.removeFirst(), (Integer) 46);
-    */
-  }
+    // fix random seed.
+    List list = new ArrayList<>(12 + 1024);
+    Random r = new Random(1);
+    for (int i = 0; i < 12; ++i) {
+      int ele = Math.abs(r.nextInt()) % 512;
+      heap.add(ele);
+      list.add(i, ele);
+    }
 
+    for (int i = 0; i < 1024; ++i) {
+      int ele = Math.abs(r.nextInt()) % 512;
+      if (ele > heap.peekFirst()) {
+        heap.removeFirst();
+        heap.add(ele);
+      }
+      list.add(i + 12, ele);
+    }
+
+    Collections.sort(list);
+    // The max value not in the heap.
+    Integer max = (Integer) list.get(1024 - 1);
+    Assert.assertEquals(heap.size(), 12);
+    for (int i = 0; i < 12; ++i) {
+      Assert.assertTrue(max <= heap.removeFirst());
+    }
+  }
 }
