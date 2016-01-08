@@ -20,6 +20,7 @@
 
 package io.marmot.laboratory.driver;
 
+import io.marmot.laboratory.utils.BucketCounter;
 import io.marmot.laboratory.utils.Bucketor;
 import io.marmot.laboratory.utils.RecordReader;
 import io.marmot.laboratory.utils.RecordWriter;
@@ -76,7 +77,7 @@ public class Driver {
       Future future = service.submit(bc);
       List<Map.Entry<IntRecord, Integer>> list = (List<Map.Entry<IntRecord,Integer>>) future.get();
       int max = Math.min(top, list.size());
-      System.out.println("TOP " + max + " in bucket this bucket is: ");
+      System.out.println("TOP " + max + " in this bucket is: ");
       for (Map.Entry<IntRecord, Integer> ele : list) {
         System.out.println(ele.getKey().toString() + ": " +
             ele.getValue());

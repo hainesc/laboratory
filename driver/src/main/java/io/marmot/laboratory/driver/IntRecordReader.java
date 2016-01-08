@@ -22,7 +22,11 @@ package io.marmot.laboratory.driver;
 
 import io.marmot.laboratory.utils.RecordReader;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class IntRecordReader implements RecordReader<IntRecord> {
   private BufferedReader br;
@@ -32,8 +36,7 @@ public class IntRecordReader implements RecordReader<IntRecord> {
           new InputStreamReader(
               new FileInputStream(from)));
     } catch (FileNotFoundException fne) {
-      System.err.print("FIle " + from + " not found");
-      System.exit(1);
+      throw new RuntimeException("File " + from + " not found.");
     }
   }
   public IntRecord next() {
@@ -41,7 +44,7 @@ public class IntRecordReader implements RecordReader<IntRecord> {
     try {
       tmp = br.readLine();
     } catch (IOException ioe) {
-      throw new RuntimeException("IOException while read next value.");
+      throw new RuntimeException("Error while reading next value.");
     }
     if ((tmp == null) || "".equals(tmp)) {
       return null;

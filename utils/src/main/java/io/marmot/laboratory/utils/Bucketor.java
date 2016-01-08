@@ -93,11 +93,6 @@ public class Bucketor<T extends Record> {
     return ret;
   }
 
-  // TODO: callable and return value.
-  public int[] getCount() {
-    return count;
-  }
-
   public void setMonitor(ShortCircuitMonitor m) {
     this.monitor = m;
   }
@@ -134,8 +129,7 @@ public class Bucketor<T extends Record> {
         }
         endOfFile = true;
       } catch (IOException ioe) {
-        System.err.println("Error while reading the records.");
-        System.exit(1);
+        throw new RuntimeException("Error while reading the records.");
       } finally {
         try {
           rr.close();
@@ -189,8 +183,7 @@ public class Bucketor<T extends Record> {
         rw.flush();
         flushed[id] = true;
       } catch (Exception e) {
-        System.err.println("Error while writing record to disk.");
-        System.exit(1);
+        throw new RuntimeException("Error while writing record to disk.");
       } finally {
         try {
           rw.close();

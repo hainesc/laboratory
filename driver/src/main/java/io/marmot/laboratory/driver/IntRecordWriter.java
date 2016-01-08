@@ -22,16 +22,22 @@ package io.marmot.laboratory.driver;
 
 import io.marmot.laboratory.utils.RecordWriter;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 public class IntRecordWriter implements RecordWriter<IntRecord> {
   private BufferedWriter bw;
   public IntRecordWriter(String to) {
     try {
-      this.bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(to)));
+      this.bw = new BufferedWriter(
+          new OutputStreamWriter(
+              new FileOutputStream(to)));
     } catch (FileNotFoundException fne) {
-      System.err.println("File " + to + " not found.");
-      System.exit(1);
+      throw new RuntimeException("Can not create file at " + to +
+          " , Please check the directory and permission of " + to);
     }
   }
   @Override
