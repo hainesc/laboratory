@@ -18,10 +18,7 @@
  * IN THE SOFTWARE.
  */
 
-package io.marmot.laboratory.driver;
-
-import io.marmot.laboratory.utils.Record;
-import io.marmot.laboratory.utils.RecordReader;
+package io.marmot.laboratory.utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-// TODO: not so good, sorted map is better. but may be not suitable for merge sort.
 public class BucketCounter<T extends Record>
     implements Callable<List<Map.Entry<T, Integer>>> {
 
@@ -70,15 +66,8 @@ public class BucketCounter<T extends Record>
           return o2.getValue().compareTo(o1.getValue());
         }
       });
-      // TODO: set result and create a function to get the result.
       int max = Math.min(top, list.size());
       return list.subList(0, max);
-      /*
-      System.out.println("TOP " + max + " in bucket this bucket is: ");
-      for (int i = 0; i < max; ++i) {
-        System.out.println(list.get(i).getKey().toString() + ": " + list.get(i).getValue());
-      }
-      */
     } catch (IOException ioe) {
       throw new RuntimeException("Error while reading bucket file...");
     } finally {
