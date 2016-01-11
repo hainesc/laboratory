@@ -44,8 +44,8 @@ public class Driver {
     Shuffler<IntRecord> shuffler = new Shuffler<IntRecord>() {
       @Override
       public int shuffle(IntRecord i, int bucket_cnt) {
-        return bucket_cnt - i.getV() / bucket_cnt - 1;
-        // return i.getV() / bucket_cnt;
+        // return bucket_cnt - i.getV() / bucket_cnt - 1;
+        return i.getV() % bucket_cnt;
       }
     };
     final int bucket_cnt = 13;

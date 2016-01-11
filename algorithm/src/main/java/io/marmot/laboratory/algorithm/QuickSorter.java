@@ -117,7 +117,7 @@ public class QuickSorter {
    * @param begin
    * @param end
    * @param <T>
-   * @return  the index of povit.
+   * @return  the index of pivot.
    */
   private static <T extends Comparable<? super T>> int partition(
       T[] array,

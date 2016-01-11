@@ -62,7 +62,8 @@ public class SortedMerger {
         }
       }
       for (++i; i < length; ++i) {
-        if (cursor[i] != -1 && c.compare(seed, lists.get(i).get(cursor[i])) > 0) {
+        if (cursor[i] != -1 &&
+            c.compare(seed, lists.get(i).get(cursor[i])) > 0) {
           seed = lists.get(i).get(cursor[i]);
           incre = i;
         }
