@@ -76,8 +76,8 @@ public class KthSelector {
         begin = current + 1;
       }
     }
-
-    return 0;
+    // Unreachable.
+    return -1;
   }
 
   /**
