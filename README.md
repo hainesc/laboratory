@@ -2,7 +2,8 @@ Laboratory
 ==========
 
 Laboratory is a maven managed Java project that illustrates how to solve 
-problem when data is huge, it is useful especially for big data interviewer.
+problem when data is huge, it is useful especially for both big data 
+interviewee and interviewer.
 
 Algorithm
 ---------
