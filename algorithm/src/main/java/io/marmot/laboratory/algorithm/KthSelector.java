@@ -35,7 +35,7 @@ public class KthSelector {
    * @param c the comparator.
    * @param k the K'th.
    * @param <T>
-   * @return The K'th value.
+   * @return the K'th value.
    */
   public static <T extends Comparable<? super T>> T select(
       T[] array,
@@ -77,7 +77,7 @@ public class KthSelector {
       }
     }
     // Unreachable.
-    return -1;
+    throw new RuntimeException("Should never reach here.");
   }
 
   /**
@@ -86,8 +86,9 @@ public class KthSelector {
    * @param c the comparator.
    * @param begin the begin.
    * @param end the end.
+   * @param index, the index of chosen pivot.
    * @param <T>
-   * @return  the index of pivot.
+   * @return the index of pivot.
    */
   private static <T extends Comparable<? super T>> int partition(
       T[] array,
