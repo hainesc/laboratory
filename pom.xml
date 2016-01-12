@@ -35,13 +35,6 @@
 
   <properties>
     <junit.version>4.12</junit.version>
+    <guava.version>19.0</guava.version>
   </properties>  
-
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-    </dependency>
-  </dependencies>
 </project>
