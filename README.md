@@ -27,9 +27,9 @@ problems locally.
     but inter bucket they are ordered. Maintain a counter for each bucket 
     indexed how many values in this bucket. More detail below:
   
-  *  Sampling and statistics the records, Computing the split value, make some 
+  *  Sample and analyse the records, Compute the split value, make some 
      buckets.
-  *  Reading a record each time. Computing which bucket the record should be 
+  *  Read a record each time. Compute which bucket the record should be 
      shuffled, put the value to corresponding queue and make counter += 1. 
   *  Each queue has its corresponding write thread which writes the values in 
      the queue to disk.
@@ -44,18 +44,18 @@ problems locally.
   *  If data is too huge to one reader, just create more readers, No 
      interaction among readers. ...
     
-3.  Most K, K always tiny compared to n and the distinct value set is small.
-    Counting. for every distinct value maintain a counter. For example: Which 
-    countries have most visit to our web? 
+3.  Most K, when K is tiny compared to n and the distinct value set is small.
+    It is simple and what you need to do is maintaining a HashMap, and 
+    counting the records. For example: Which country have most visitors to 
+    our web? 
     Record format is: id, cookie, ... , country.
     
-4.  Most K, K always tiny compared to n, the distinct value set in data is 
+4.  Most K, when K is tiny compared to n and the distinct value set in data is 
     huge.
-  *  Hash bucket(efficient!).
-  *  Word count for every bucket by Hash map, get most k in every bucket.
-  *  Merge sort.
-
-  Yeah, that is what MapReduce does.
+  *  Make some Hash buckets. Read every record and write it to the 
+     corresponding bucket.
+  *  Do word count for every bucket by Hash map, get most k in every bucket.
+  *  Merge the sorted lists and get the top K.
 
 Code Compile
 ------------
