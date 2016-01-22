@@ -41,7 +41,7 @@ public class KthSelector {
       T[] array,
       Comparator<? super T> c,
       int k) {
-    return array[select(array, c, 0, array.length - 1, k)];
+    return array[select(array, c, 0, array.length - 1, k - 1)];
   }
   /**
    * select the K'th element from an unsorted array, return the index.
@@ -61,14 +61,23 @@ public class KthSelector {
       int begin,
       int end,
       int k) {
+    // TODO: [begin, end)
     if (begin == end) {
       return begin;
     }
-    while (begin != end)  {
+    while (true)  {
+      // the index of median of medians.
       int current = pivot(array, c, begin, end);
       current = partition(array, c, begin, end, current);
       if (k == current) {
-        return k;
+        // return the index of the max value in smalls, because Hoare partition.
+        int x = begin;
+        for (int y = begin + 1; y <= k; ++y) {
+          if (c.compare(array[x], array[y]) < 0) {
+            x = y;
+          }
+        }
+        return x;
       }
       else if (k < current) {
         end = current;
@@ -76,19 +85,18 @@ public class KthSelector {
         begin = current + 1;
       }
     }
-    // Unreachable.
-    throw new RuntimeException("Should never reach here.");
   }
 
   /**
-   * Hoare partition used by quick sort and quick select.
-   * @param array
-   * @param c the comparator.
-   * @param begin the begin.
-   * @param end the end.
+   * Hoare partition used by quick sort and quick select. see QuickSorter for
+   * more details.
+   * @param array, array to be partitioned.
+   * @param c, comparator.
+   * @param begin, begin.
+   * @param end, end.
    * @param index, the index of chosen pivot.
    * @param <T>
-   * @return the index of pivot.
+   * @return the index where [beg, index] <= pivot, (index, end] >= pivot.
    */
   private static <T extends Comparable<? super T>> int partition(
       T[] array,
@@ -110,7 +118,9 @@ public class KthSelector {
         T tmp = array[i];
         array[i] = array[j];
         array[j] = tmp;
-      } else return j;
+      } else {
+        return j;
+      }
     }
   }
 
@@ -132,19 +142,10 @@ public class KthSelector {
       int begin,
       int end) {
     if (end - begin < 5) {
-      for (int i = begin; i < end; ++i) {
-        for (int k = i; k < end; ++k) {
-          if (c.compare(array[i], array[k]) > 0) {
-            T tmp = array[i];
-            array[i] = array[k];
-            array[k] = tmp;
-          }
-        }
-      }
-      return (begin + end) / 2;
+      return median5(array, c, begin, end);
     }
 
-    for (int i = begin; i < end; i += 5) {
+    for (int i = begin; i <= end; i += 5) {
       // inner end.
       int r = i + 4;
       if (r > end) {

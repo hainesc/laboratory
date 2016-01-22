@@ -112,12 +112,12 @@ public class QuickSorter {
 
   /**
    * Hoare partition used by quick sort and quick select.
-   * @param array
-   * @param c
-   * @param begin
-   * @param end
+   * @param array, array to be partitioned.
+   * @param c, comparator.
+   * @param begin, begin.
+   * @param end, end.
    * @param <T>
-   * @return  the index of pivot.
+   * @return the index where [beg, index] <= pivot, (index, end] >= pivot.
    */
   private static <T extends Comparable<? super T>> int partition(
       T[] array,
@@ -125,6 +125,9 @@ public class QuickSorter {
       int begin,
       int end) {
     T pivot = array[(begin + end) / 2];
+    // In wikipedia, the pivot is the first element and there is a swap
+    // before return j, but the swap is useless as described below.
+    // T pivot = array[begin];
     int i = begin - 1;
     int j = end + 1;
     while (true) {
@@ -138,7 +141,13 @@ public class QuickSorter {
         T tmp = array[i];
         array[i] = array[j];
         array[j] = tmp;
-      } else return j;
+      } else {
+        // swap the begin or pivot and the array[j] is not necessary since
+        // we have beg < j always, and [beg, index] <= pivot, swap in the
+        // single partition is useless.
+        // https://en.wikipedia.org/wiki/Quicksort
+        return j;
+      }
     }
   }
 }
