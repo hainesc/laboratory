@@ -25,43 +25,45 @@ import org.junit.Test;
 import org.junit.Before;
 import org.junit.After;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Random;
 
 public class TopKTest {
+  private final static Random r = new Random(1);
+  private final static int length = 1024;
+  private final static int bound = 2048;
+  private final static int times = 8;
+  private ArrayList<Integer> sorted;
+  private Integer[] array;
 
   @Before
   public void setUp() {
+    ArrayList<Integer> shuffled = new ArrayList<>(length);
+    sorted = new ArrayList<>(length);
+    for (int i = 0; i < length; ++i) {
+      int x = r.nextInt(bound);
+      sorted.add(i, x);
+      shuffled.add(i, x);
+    }
+    Collections.sort(sorted);
+    array = shuffled.toArray(new Integer[length]);
   }
 
   @Test
-  public void testQuickSelect() {
-    Integer[] array = {45, 42, 13, 87, 36, 55, 67, 13, 90, 54, 51, 9};
-
-    Integer i0 = KthSelector.select(array, new Comparator<Integer>() {
-      @Override
-      public int compare(Integer o1, Integer o2) {
-        return o1.compareTo(o2);
-      }
-    }, 1 - 1);
-    Assert.assertEquals((Integer) 9, i0);
-
-    Integer i1 = KthSelector.select(array, new Comparator<Integer>() {
-      @Override
-      public int compare(Integer o1, Integer o2) {
-        return o1.compareTo(o2);
-      }
-    }, 9 - 1);
-    Assert.assertEquals((Integer) 55, i1);
-
-    Integer i2 = KthSelector.select(array, new Comparator<Integer>() {
-      @Override
-      public int compare(Integer o1, Integer o2) {
-        return o1.compareTo(o2);
-      }
-    }, 5 - 1);
-    Assert.assertEquals((Integer) 42, i2);
+  public void testMediansSelect() {
+    for (int i = 0; i < times; ++i) {
+      int k = r.nextInt(length) + 1;
+      Integer kth = KthSelector.select(array, new Comparator<Integer>() {
+        @Override
+        public int compare(Integer o1, Integer o2) {
+          return o1.compareTo(o2);
+        }
+      }, k);
+      Assert.assertEquals(sorted.get(k - 1), kth);
+    }
   }
-
   @After
   public void tearDown() {
   }

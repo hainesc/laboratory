@@ -25,66 +25,59 @@ import org.junit.Test;
 import org.junit.Before;
 import org.junit.After;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Random;
 
 public class QuickSorterTest {
+  private final static Random r = new Random(1);
+  private final static int length = 1024;
+  private final static int bound = 2048;
+  private final static int times = 16;
+  private ArrayList<Integer> sorted;
+  private Integer[] array;
 
   @Before
   public void setUp() {
+    sorted = new ArrayList<>(length);
+    for (int i = 0; i < length; ++i) {
+      int x = r.nextInt(bound);
+      sorted.add(i, x);
+    }
+    array = sorted.toArray(new Integer[length]);
+    Collections.sort(sorted);
   }
 
   @Test
   public void testQuickSort() {
-    Integer[] array = {45, 42, 13, 87, 36, 55, 67, 13, 90, 54, 51, 9};
     QuickSorter.sort(array, new Comparator<Integer>() {
       @Override
-      public int compare(Integer i1, Integer i2) {
-        return i1.compareTo(i2);
+      public int compare(Integer o1, Integer o2) {
+        return o1.compareTo(o2);
       }
     });
-    Assert.assertEquals(array[0], (Integer) 9);
-    Assert.assertEquals(array[1], (Integer) 13);
-    Assert.assertEquals(array[2], (Integer) 13);
-    Assert.assertEquals(array[3], (Integer) 36);
-    Assert.assertEquals(array[4], (Integer) 42);
-    Assert.assertEquals(array[5], (Integer) 45);
-    Assert.assertEquals(array[6], (Integer) 51);
-    Assert.assertEquals(array[7], (Integer) 54);
-    Assert.assertEquals(array[8], (Integer) 55);
-    Assert.assertEquals(array[9], (Integer) 67);
-    Assert.assertEquals(array[10], (Integer) 87);
-    Assert.assertEquals(array[11], (Integer) 90);
+    for (int i = 0; i < length; ++i) {
+      Assert.assertEquals(sorted.get(i), array[i]);
+    }
   }
 
-  @Test
+  // @Test
   public void testQuickSelect() {
-    Integer[] array = {45, 42, 13, 87, 36, 55, 67, 13, 90, 54, 51, 9};
-
-    Integer i0 = QuickSorter.select(array, new Comparator<Integer>() {
-      @Override
-      public int compare(Integer o1, Integer o2) {
-        return o1.compareTo(o2);
-      }
-    }, 1);
-    Assert.assertEquals((Integer) 9, i0);
-
-    Integer i1 = QuickSorter.select(array, new Comparator<Integer>() {
-      @Override
-      public int compare(Integer o1, Integer o2) {
-        return o1.compareTo(o2);
-      }
-    }, 9);
-    Assert.assertEquals((Integer) 55, i1);
-
-    Integer i2 = QuickSorter.select(array, new Comparator<Integer>() {
-      @Override
-      public int compare(Integer o1, Integer o2) {
-        return o1.compareTo(o2);
-      }
-    }, 5);
-    Assert.assertEquals((Integer) 42, i2);
+    Collections.shuffle(sorted);
+    array = sorted.toArray(new Integer[length]);
+    Collections.sort(sorted);
+    for (int i = 0; i < times; ++i) {
+      int k = r.nextInt(length) + 1;
+      Integer kth = QuickSorter.select(array, new Comparator<Integer>() {
+        @Override
+        public int compare(Integer o1, Integer o2) {
+          return o1.compareTo(o2);
+        }
+      }, k);
+      Assert.assertEquals(sorted.get(k - 1), kth);
+    }
   }
-
   @After
   public void tearDown() {
   }
