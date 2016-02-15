@@ -46,7 +46,7 @@ public class KthSelector {
   /**
    * select the K'th element from an unsorted array, return the index.
    * see https://en.wikipedia.org/wiki/Median_of_medians
-   * @param array
+   * @param array [begin, end].
    * @param begin the begin.
    * @param end the end.
    * @param c the comparator.
@@ -61,7 +61,8 @@ public class KthSelector {
       int begin,
       int end,
       int k) {
-    // TODO: [begin, end)
+    // TODO: [begin, end), left-closed and right-open.
+    // But is that really needed?
     if (begin == end) {
       return begin;
     }
@@ -70,6 +71,7 @@ public class KthSelector {
       int current = pivot(array, c, begin, end);
       current = partition(array, c, begin, end, current);
       if (k == current) {
+        // TODO: improvement required.
         // return the index of the max value in smalls, because Hoare partition.
         int x = begin;
         for (int y = begin + 1; y <= k; ++y) {
