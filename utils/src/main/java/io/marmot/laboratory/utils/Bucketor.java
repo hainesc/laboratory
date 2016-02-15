@@ -44,7 +44,7 @@ public class Bucketor<T extends Record> {
   private boolean[] flushed;
   private boolean[] omit;
   private int[] count;
-  // private RecordReader rr;
+
   @SuppressWarnings("unchecked")
   public Bucketor(Shuffler<T> shuffler,
                   RecordReader rr,
@@ -55,6 +55,7 @@ public class Bucketor<T extends Record> {
     this.bucket_cnt = bucket_cnt;
     BlockingQueue<Record>[] blockingQueues =
         new LinkedBlockingQueue[bucket_cnt];
+
     for (int i = 0; i < bucket_cnt; ++i) {
       blockingQueues[i] = new LinkedBlockingQueue<>();
     }
@@ -63,6 +64,7 @@ public class Bucketor<T extends Record> {
     this.flushed = new boolean[bucket_cnt];
     this.count = new int[bucket_cnt];
     this.omit = new boolean[bucket_cnt];
+
     for (int i = 0; i < bucket_cnt; ++i) {
       this.writers[i] = new BucketWriter<>(rws[i], i, blockingQueues[i]);
       flushed[i] = false;
@@ -122,7 +124,7 @@ public class Bucketor<T extends Record> {
         while ((r = rr.next()) != null) {
           // Decide shuffle to which bucket.
           int index = shuffler.shuffle((T)r, bucket_cnt);
-          if (!omit[index]) {
+          if (! omit[index]) { // short circuited.
             blockingQueues[index].add(r);
             ++count[index];
           }
@@ -163,10 +165,6 @@ public class Bucketor<T extends Record> {
     @SuppressWarnings("unchecked")
     public void run() {
       try {
-        // TODO: need not write to disk in some case. popping is enough
-        // for example, what you need is top k value, and values in great
-        // buckets have count > k, so the value in little bucket need not
-        // write to disk.
         Record r;
         while (! endOfFile) {
           // Read and sleep while the data continuously come in.
@@ -196,13 +194,13 @@ public class Bucketor<T extends Record> {
 
   public class TopKShortCircuitMonitor extends ShortCircuitMonitor {
     // No lock, because it is just an optimization, lock on endOFile, omit
-    // and count is forbidden since reader thread will not be interrupted.
+    // and count is forbidden since reader thread will be interrupted.
     private int top;
 
     /**
      * Top K short circuit optimizer. If your expectation is the top k in the
      * set, and you have the buckets in order, then, if have more the k values
-     * in big buckets, then the litter ones can be omitted.
+     * in big buckets, then the little ones can be omitted.
      * @param top
      */
     public TopKShortCircuitMonitor(int top) {
@@ -210,11 +208,11 @@ public class Bucketor<T extends Record> {
     }
     @Override
     public void run() {
-      while (!endOfFile) {
+      while (! endOfFile) {
         int already = 0;
         try {
-          // TODO: parameterize this time.
-          Thread.sleep(3);
+          // TODO: parameterize this time gap.
+          Thread.sleep(128);
           int i = 0;
           for (; i < bucket_cnt; ++i) {
             already += count[i];
