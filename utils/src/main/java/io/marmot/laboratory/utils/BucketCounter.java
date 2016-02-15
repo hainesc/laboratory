@@ -63,6 +63,7 @@ public class BucketCounter<T extends Record>
         @Override
         public int compare(Map.Entry<T, Integer> o1,
                            Map.Entry<T, Integer> o2) {
+          // bigger -> small.
           return o2.getValue().compareTo(o1.getValue());
         }
       });
