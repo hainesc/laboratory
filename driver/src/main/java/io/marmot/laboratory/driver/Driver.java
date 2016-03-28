@@ -31,10 +31,10 @@ import java.io.PrintWriter;
 public class Driver {
   private static void printHelp(PrintStream out, Options options) {
     // String header = "Spider usage details: ";
-    String header = null;
-    String footer = "Any problem, please contact with Haines Chan.";
-    PrintWriter writer = new PrintWriter(out);
-    HelpFormatter formatter = new HelpFormatter();
+    final String header = "Laboratory is an algorithm collection in big data.";
+    final String footer = "Any problem, please contact with Haines Chan.";
+    final PrintWriter writer = new PrintWriter(out);
+    final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(writer, 80, "Laboratory", header, options,
         1, 3, footer, true);
     writer.close();
@@ -54,7 +54,6 @@ public class Driver {
   }
 
   public static void main(String[] args) {
-
     Options options = new Options();
     options.addOption(Option.builder("a")
         .argName("algorithm")
@@ -82,7 +81,7 @@ public class Driver {
         .longOpt("help")
         .build());
 
-    CommandLineParser parser = new DefaultParser();
+    final CommandLineParser parser = new DefaultParser();
     try {
       CommandLine cmd = parser.parse(options, args);
 
@@ -94,7 +93,7 @@ public class Driver {
         printVersion(System.out);
       }
       String file = cmd.getOptionValue("f");
-      String algorithm = cmd.getOptionValue("f");
+      String algorithm = cmd.getOptionValue("a");
 
       System.out.println("I will do something on file " +
            file + " by " +
@@ -102,6 +101,7 @@ public class Driver {
 
     } catch (ParseException pe) {
       System.err.println("Parsing failed, " + pe.getMessage());
+      System.exit(1);
     }
   }
 }
