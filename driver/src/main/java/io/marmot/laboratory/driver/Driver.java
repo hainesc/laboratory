@@ -20,71 +20,89 @@
 
 package io.marmot.laboratory.driver;
 
-import io.marmot.laboratory.utils.BucketCounter;
-import io.marmot.laboratory.utils.Bucketor;
-import io.marmot.laboratory.utils.RecordReader;
-import io.marmot.laboratory.utils.RecordWriter;
-import io.marmot.laboratory.utils.Shuffler;
+import org.apache.commons.cli.*;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 
 /**
  * Laboratory.
  */
 public class Driver {
-  @SuppressWarnings("unchecked")
-  public static void main(String[] args) throws Exception {
-    String from = "/tmp/data";
-    String to = "/tmp/bucket_";
-    Shuffler<IntRecord> shuffler = new Shuffler<IntRecord>() {
-      @Override
-      public int shuffle(IntRecord i, int bucket_cnt) {
-        // return bucket_cnt - i.getV() / bucket_cnt - 1;
-        return i.getV() % bucket_cnt;
-      }
-    };
-    final int bucket_cnt = 13;
-    RecordReader<IntRecord> rr = new IntRecordReader(from);
-    RecordWriter<IntRecord>[] rws = new RecordWriter[bucket_cnt];
-    for (int i = 0; i < bucket_cnt; ++i) {
-      rws[i] = new IntRecordWriter(to + i);
-    }
-    final int top = 25000;
-    Bucketor bucketor = new Bucketor(shuffler, rr, rws, bucket_cnt, null);
-    bucketor.setMonitor(bucketor.new TopKShortCircuitMonitor(top));
-    bucketor.process();
-    while (!bucketor.flushed()) {
-      Thread.sleep(1000);
-    }
-    rr.close();
+  private static void printHelp(PrintStream out, Options options) {
+    // String header = "Spider usage details: ";
+    String header = null;
+    String footer = "Any problem, please contact with Haines Chan.";
+    PrintWriter writer = new PrintWriter(out);
+    HelpFormatter formatter = new HelpFormatter();
+    formatter.printHelp(writer, 80, "Laboratory", header, options,
+        1, 3, footer, true);
+    writer.close();
+  }
 
-    Comparator<IntRecord> comparator = new Comparator<IntRecord>() {
-      @Override
-      public int compare(IntRecord o1, IntRecord o2) {
-        return new Integer(o1.getV()).compareTo(o2.getV());
-      }
-    };
+  private static void printUsage(final String appName,
+                                 Options options,
+                                 PrintStream out) {
+    final PrintWriter writer = new PrintWriter(out);
+    final HelpFormatter formatter = new HelpFormatter();
+    formatter.printUsage(writer, 80, appName, options);
+    writer.close();
+  }
 
-    ExecutorService service = Executors.newSingleThreadExecutor();
-    for (int i = 0; i < bucket_cnt; ++i) {
-      RecordReader<IntRecord> crr = new IntRecordReader(to + i);
-      BucketCounter bc = new BucketCounter(crr, top);
-      Future future = service.submit(bc);
-      List<Map.Entry<IntRecord, Integer>> list = (List<Map.Entry<IntRecord,Integer>>) future.get();
-      int max = Math.min(top, list.size());
-      System.out.println("TOP " + max + " in this bucket is: ");
-      for (Map.Entry<IntRecord, Integer> ele : list) {
-        System.out.println(ele.getKey().toString() + ": " +
-            ele.getValue());
+  private static void printVersion(PrintStream out) {
+    out.println("Laboratory version 0.1");
+  }
+
+  public static void main(String[] args) {
+
+    Options options = new Options();
+    options.addOption(Option.builder("a")
+        .argName("algorithm")
+        .required()
+        .hasArg()
+        .longOpt("algorithm")
+        .desc("The algorithm you choose")
+        .build());
+
+    options.addOption(Option.builder("f")
+        .argName("file")
+        .required()
+        .desc("Input file")
+        .longOpt("file")
+        .hasArg()
+        .build());
+
+    options.addOption(Option.builder("v")
+        .desc("Show version string")
+        .longOpt("version")
+        .build());
+
+    options.addOption(Option.builder("h")
+        .desc("Show help message")
+        .longOpt("help")
+        .build());
+
+    CommandLineParser parser = new DefaultParser();
+    try {
+      CommandLine cmd = parser.parse(options, args);
+
+      if (cmd.hasOption("h")) {
+        printHelp(System.err, options);
       }
+
+      if (cmd.hasOption("v")) {
+        printVersion(System.out);
+      }
+      String file = cmd.getOptionValue("f");
+      String algorithm = cmd.getOptionValue("f");
+
+      System.out.println("I will do something on file " +
+           file + " by " +
+           algorithm + " later.");
+
+    } catch (ParseException pe) {
+      System.err.println("Parsing failed, " + pe.getMessage());
     }
-    service.shutdown();
-
   }
 }
 
