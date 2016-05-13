@@ -24,6 +24,9 @@ import org.apache.commons.cli.*;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 
 /**
  * Laboratory.
@@ -54,10 +57,11 @@ public class Driver {
   }
 
   public static void main(String[] args) {
+    // TODO: import option group. http://stackoverflow.com/questions/10798208/commons-cli-required-groups
     Options options = new Options();
     options.addOption(Option.builder("a")
         .argName("algorithm")
-        .required()
+        // .required()
         .hasArg()
         .longOpt("algorithm")
         .desc("The algorithm you choose")
@@ -65,7 +69,7 @@ public class Driver {
 
     options.addOption(Option.builder("f")
         .argName("file")
-        .required()
+        // .required()
         .desc("Input file")
         .longOpt("file")
         .hasArg()
@@ -87,13 +91,19 @@ public class Driver {
 
       if (cmd.hasOption("h")) {
         printHelp(System.err, options);
+        System.exit(0);
       }
 
       if (cmd.hasOption("v")) {
         printVersion(System.out);
+        System.exit(0);
       }
       String file = cmd.getOptionValue("f");
       String algorithm = cmd.getOptionValue("a");
+      if (file == null || algorithm == null) {
+        printUsage("Laboratory", options, System.err);
+        System.exit(-1);
+      }
 
       System.out.println("I will do something on file " +
            file + " by " +
