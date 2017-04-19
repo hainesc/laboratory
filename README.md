@@ -65,3 +65,8 @@ Make sure git, java, mvn is available for current user.
 cd workspace && git clone https://github.com/hainesc/laboratory
 cd laboratory && mvn package
 ```
+
+CI/CD
+-----
+
+Add some change to test CI/CD.
